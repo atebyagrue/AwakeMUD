@@ -58,3 +58,6 @@ references/
 
 # Secrets that only the game server should know about
 src/secrets*
+
+# Custom 
+.vscode/

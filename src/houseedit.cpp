@@ -22,12 +22,14 @@ void _load_apartment_from_old_house_file(Apartment *apartment, ApartmentRoom *su
 #define HED_NUKEANDPAVE TRUE
 #define HED_IMPORT FALSE
 
-ACMD(do_houseedit) {
+ACMD(do_houseedit)
+{
   char mode[100], func[100];
   char *mode_remainder = one_argument(argument, mode);
   char *func_remainder = one_argument(mode_remainder, func);
 
-  if (is_abbrev(mode, "nukeandpave")) {
+  if (is_abbrev(mode, "nukeandpave"))
+  {
     // Completely blow away all of our existing apartments and complexes and rebuild from old housing files. DESTRUCTIVE.
     FAILURE_CASE(GET_LEVEL(ch) < LVL_PRESIDENT, "You're not erudite enough to do that.");
     FAILURE_CASE(str_cmp(func, "hurtmedaddy"), "To ^RBLOW AWAY ALL EXISTING APARTMENT COMPLEXES^n and create them fresh from old files, type HOUSEEDIT NUKEANDPAVE HURTMEDADDY.");
@@ -36,23 +38,28 @@ ACMD(do_houseedit) {
     return;
   }
 
-  if (is_abbrev(mode, "import")) {
+  if (is_abbrev(mode, "import"))
+  {
     // Destroy current room contents, then assign owners and storage contents from old files. You probably want to run this on the live port.
     FAILURE_CASE(GET_LEVEL(ch) < LVL_PRESIDENT, "You're not erudite enough to do that.");
 
-    if (!str_cmp(func, "confirm")) {
+    if (!str_cmp(func, "confirm"))
+    {
       houseedit_import_from_old_files(ch, HED_IMPORT, NULL);
     }
-    else if (!str_cmp(func, "here")) {
+    else if (!str_cmp(func, "here"))
+    {
       houseedit_import_from_old_files(ch, HED_IMPORT, get_ch_in_room(ch));
     }
-    else {
+    else
+    {
       send_to_char("To blow away existing apartment CONTENTS and LEASES and load from old files, type HOUSEEDIT IMPORT CONFIRM.\r\n", ch);
     }
     return;
   }
 
-  if (is_abbrev(mode, "trueup")) {
+  if (is_abbrev(mode, "trueup"))
+  {
     // Recalculate lifestyle settings for all rooms based on their current rent amounts.
     FAILURE_CASE(GET_LEVEL(ch) < LVL_PRESIDENT, "You're not erudite enough to do that.");
     FAILURE_CASE(str_cmp(func, "confirm"), "To true-up apartment lifestyle settings to match their current rent values, type HOUSEEDIT TRUEUP CONFIRM.");
@@ -61,7 +68,8 @@ ACMD(do_houseedit) {
     return;
   }
 
-  if (is_abbrev(mode, "reload")) {
+  if (is_abbrev(mode, "reload"))
+  {
     // Reload the storage for the subroom you're currently standing in.
     FAILURE_CASE(GET_LEVEL(ch) < LVL_EXECUTIVE, "You're not erudite enough to do that.");
     FAILURE_CASE(!ch->in_room || !GET_APARTMENT_SUBROOM(ch->in_room), "You must be standing in an apartment for that.");
@@ -70,21 +78,25 @@ ACMD(do_houseedit) {
     return;
   }
 
-  if (is_abbrev(mode, "complex")) {
+  if (is_abbrev(mode, "complex"))
+  {
     // List the complexes in game.
-    if (is_abbrev(func, "list")) {
+    if (is_abbrev(func, "list"))
+    {
       houseedit_list_complexes(ch, func_remainder);
       return;
     }
 
     // Show details about a specific complex.
-    if (is_abbrev(func, "show")) {
+    if (is_abbrev(func, "show"))
+    {
       houseedit_show_complex(ch, func_remainder);
       return;
     }
 
     // Create a new complex.
-    if (is_abbrev(func, "create")) {
+    if (is_abbrev(func, "create"))
+    {
       FAILURE_CASE(!PLR_FLAGGED(ch, PLR_OLC) && !access_level(ch, LVL_PRESIDENT), YOU_NEED_OLC_FOR_THAT);
 
       houseedit_create_complex(ch);
@@ -92,7 +104,8 @@ ACMD(do_houseedit) {
     }
 
     // Delete an existing empty complex.
-    if (is_abbrev(func, "delete")) {
+    if (is_abbrev(func, "delete"))
+    {
       FAILURE_CASE(!PLR_FLAGGED(ch, PLR_OLC) && !access_level(ch, LVL_PRESIDENT), YOU_NEED_OLC_FOR_THAT);
       FAILURE_CASE(GET_LEVEL(ch) < LVL_ADMIN, "You're not erudite enough to do that.");
 
@@ -101,7 +114,8 @@ ACMD(do_houseedit) {
     }
 
     // Edit an existing complex.
-    if (is_abbrev(func, "edit")) {
+    if (is_abbrev(func, "edit"))
+    {
       FAILURE_CASE(!PLR_FLAGGED(ch, PLR_OLC) && !access_level(ch, LVL_PRESIDENT), YOU_NEED_OLC_FOR_THAT);
 
       houseedit_edit_existing_complex(ch, func_remainder);
@@ -112,21 +126,25 @@ ACMD(do_houseedit) {
     return;
   }
 
-  else if (is_abbrev(mode, "apartment")) {
+  else if (is_abbrev(mode, "apartment"))
+  {
     // List existing apartments in the given complex.
-    if (is_abbrev(func, "list")) {
+    if (is_abbrev(func, "list"))
+    {
       houseedit_list_apartments(ch, func_remainder);
       return;
     }
 
     // Show details about a specific apartment.
-    if (is_abbrev(func, "show")) {
+    if (is_abbrev(func, "show"))
+    {
       houseedit_show_apartment(ch, func_remainder);
       return;
     }
 
     // Create a new apartment in the complex you're standing in, or the named one provided
-    if (is_abbrev(func, "create")) {
+    if (is_abbrev(func, "create"))
+    {
       FAILURE_CASE(!access_level(ch, LVL_PRESIDENT) && !PLR_FLAGGED(ch, PLR_OLC), YOU_NEED_OLC_FOR_THAT);
 
       houseedit_create_apartment(ch, func_remainder);
@@ -134,7 +152,8 @@ ACMD(do_houseedit) {
     }
 
     // Delete an empty, non-leased apartment you're standing in, or one matching the full name provided.
-    if (is_abbrev(func, "delete")) {
+    if (is_abbrev(func, "delete"))
+    {
       FAILURE_CASE(!access_level(ch, LVL_PRESIDENT) && !PLR_FLAGGED(ch, PLR_OLC), YOU_NEED_OLC_FOR_THAT);
       FAILURE_CASE(GET_LEVEL(ch) < LVL_ADMIN, "You're not erudite enough to do that.");
 
@@ -143,7 +162,8 @@ ACMD(do_houseedit) {
     }
 
     // Edit the apartment you're standing in, or one matching the full name provided.
-    if (is_abbrev(func, "edit")) {
+    if (is_abbrev(func, "edit"))
+    {
       FAILURE_CASE(!access_level(ch, LVL_PRESIDENT) && !PLR_FLAGGED(ch, PLR_OLC), YOU_NEED_OLC_FOR_THAT);
 
       houseedit_edit_apartment(ch, func_remainder);
@@ -151,7 +171,8 @@ ACMD(do_houseedit) {
     }
 
     // Set apartment lease info.
-    if (is_abbrev(func, "daysleft")) {
+    if (is_abbrev(func, "daysleft"))
+    {
       FAILURE_CASE(!access_level(ch, LVL_PRESIDENT), "Sorry, that function is owner-only.");
 
       // Parse out the days. This comes before the apartment name.
@@ -177,7 +198,8 @@ ACMD(do_houseedit) {
 }
 
 // Overwrite this room's storage with what's on disk.
-void houseedit_reload(struct char_data *ch, const char *filename) {
+void houseedit_reload(struct char_data *ch, const char *filename)
+{
   FAILURE_CASE(!ch->in_room || !GET_APARTMENT_SUBROOM(ch->in_room), "You must be standing in an apartment for that.");
   FAILURE_CASE(!filename || !*filename, "Syntax: ^WHOUSEEDIT RELOAD <filename to load from>^n");
 
@@ -187,7 +209,8 @@ void houseedit_reload(struct char_data *ch, const char *filename) {
 
   //  Verify that file exists.
   bf::path new_path = GET_APARTMENT_SUBROOM(ch->in_room)->get_base_directory() / filename;
-  if (!exists(new_path)) {
+  if (!exists(new_path))
+  {
     send_to_char(ch, "There is no file at path '%s'.\r\n", new_path.string().c_str());
     return;
   }
@@ -199,21 +222,23 @@ void houseedit_reload(struct char_data *ch, const char *filename) {
 }
 
 // Load old house files, parse, and transfer to new format.
-void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, struct room_data *target_room) {
-  int old_house_lifestyle_multiplier[] = { 1, 3, 10, 25 };
+void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, struct room_data *target_room)
+{
+  int old_house_lifestyle_multiplier[] = {1, 3, 10, 25};
 
-  if (nuke_and_pave && target_room) {
+  if (nuke_and_pave && target_room)
+  {
     mudlog("SYSERR: Cannot combine nuke-and-pave with target_room for houseedit_import_from_old_files().", ch, LOG_SYSLOG, TRUE);
     return;
   }
 
-  mudlog_vfprintf(ch, LOG_SYSLOG, "House %s%s started by %s.", 
-                  nuke_and_pave ? "nuke-and-pave" : "import", 
+  mudlog_vfprintf(ch, LOG_SYSLOG, "House %s%s started by %s.",
+                  nuke_and_pave ? "nuke-and-pave" : "import",
                   target_room ? " (single)" : "",
                   GET_CHAR_NAME(ch));
 
   // If we're nuking, we'll need a new set of apartment complexes to create. This is left untouched in standard import mode.
-  std::vector<ApartmentComplex*> read_apartment_complexes = {};
+  std::vector<ApartmentComplex *> read_apartment_complexes = {};
 
   // Read the old house control file. Ripped most of this code straight from house.cpp.
   FILE *fl;
@@ -221,14 +246,16 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
   char line[256];
 
   // Failure case: The file does not exist.
-  if (!(fl = fopen(HCONTROL_FILE, "r+b"))) {
+  if (!(fl = fopen(HCONTROL_FILE, "r+b")))
+  {
     log("House control file does not exist.");
     send_to_char(ch, "Operation failed: Old house control file does not exist at %s." HCONTROL_FILE);
     return;
   }
 
   // Failure case: Malformed initial line (number of complexes).
-  if (!get_line(fl, line) || sscanf(line, "%d", &num_complexes) != 1) {
+  if (!get_line(fl, line) || sscanf(line, "%d", &num_complexes) != 1)
+  {
     log("Error at beginning of house control file.");
     send_to_char(ch, "Operation failed: Old house control file (%s) is malformed.", HCONTROL_FILE);
     fclose(fl);
@@ -236,7 +263,8 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
   }
 
   // Go through each apartment complex entry.
-  for (int i = 0; i < num_complexes; i++) {
+  for (int i = 0; i < num_complexes; i++)
+  {
     idnum_t owner;
     time_t paid_until;
     vnum_t landlord_vnum, house_vnum, key_vnum, atrium;
@@ -245,7 +273,8 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
 
     // Precondition: Line must not be malformed.
     get_line(fl, line);
-    if (sscanf(line, "%ld %s %d %d", &landlord_vnum, name, &basecost, &num_rooms) != 4) {
+    if (sscanf(line, "%ld %s %d %d", &landlord_vnum, name, &basecost, &num_rooms) != 4)
+    {
       mudlog_vfprintf(ch, LOG_SYSLOG, "Format error in old house control file landlord #%d.", i);
       send_to_char(ch, "Operation failed: Old house control file (%s) is malformed.", HCONTROL_FILE);
       fclose(fl);
@@ -254,7 +283,8 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
 
     // Precondition: Landlord must match an existing NPC.
     rnum_t landlord_rnum = real_mobile(landlord_vnum);
-    if (landlord_rnum < 0) {
+    if (landlord_rnum < 0)
+    {
       mudlog_vfprintf(ch, LOG_SYSLOG, "SYSERR: Old house control file landlord vnum %ld does not match up with a real NPC.", landlord_vnum);
       send_to_char(ch, "Operation failed: Old house control file (%s) is malformed.", HCONTROL_FILE);
       fclose(fl);
@@ -263,7 +293,8 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
 
     ApartmentComplex *complex = NULL;
 
-    if (nuke_and_pave) {
+    if (nuke_and_pave)
+    {
       // Create a complex to represent this one.
       mudlog_vfprintf(ch, LOG_SYSLOG, "Loaded complex %s (landlord %ld).", name, landlord_vnum);
       complex = new ApartmentComplex(landlord_vnum);
@@ -274,27 +305,34 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
 
       // Write our complex to ensure the directory exists.
       complex->save();
-    } else {
+    }
+    else
+    {
       // Find the complex that represents this one.
-      for (auto &cplx : global_apartment_complexes) {
-        if (cplx->get_landlord_vnum() == landlord_vnum) {
+      for (auto &cplx : global_apartment_complexes)
+      {
+        if (cplx->get_landlord_vnum() == landlord_vnum)
+        {
           log_vfprintf("Found existing apartment complex for %s (%ld): %s.", name, landlord_vnum, cplx->get_name());
           complex = cplx;
         }
       }
-      if (!complex) {
+      if (!complex)
+      {
         send_to_char(ch, "Well, shit. No apartment complex exists for %s (landlord %ld). You're gonna have to do some manual repair work.\r\n", name, landlord_vnum);
         return;
       }
     }
 
     // Go through each apartment in the apartment complex entry.
-    for (int x = 0; x < num_rooms; x++) {
+    for (int x = 0; x < num_rooms; x++)
+    {
       int unused;
 
       get_line(fl, line);
       if (sscanf(line, "%ld %ld %d %d %s %ld %d %ld", &house_vnum, &key_vnum, &atrium_dir, &lifestyle, name,
-                 &owner, &unused, &paid_until) != 8) {
+                 &owner, &unused, &paid_until) != 8)
+      {
         mudlog_vfprintf(ch, LOG_SYSLOG, "Format error in old house control file's landlord #%ld room #%d.", landlord_vnum, x);
         send_to_char(ch, "Operation failed: Old house control file (%s) is malformed.", HCONTROL_FILE);
         fclose(fl);
@@ -303,7 +341,8 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
 
       rnum_t house_rnum = real_room(house_vnum);
 
-      if (house_rnum < 0) {
+      if (house_rnum < 0)
+      {
         mudlog_vfprintf(ch, LOG_SYSLOG, "SYSERR: Old house control file's house vnum %ld does not match up with a real room.", house_vnum);
         send_to_char(ch, "Operation failed: Old house control file (%s) is malformed.", HCONTROL_FILE);
         fclose(fl);
@@ -311,7 +350,8 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
       }
 
       // Attempt to map the atrium.
-      if (!EXIT2(&world[house_rnum], atrium_dir) || !EXIT2(&world[house_rnum], atrium_dir)->to_room) {
+      if (!EXIT2(&world[house_rnum], atrium_dir) || !EXIT2(&world[house_rnum], atrium_dir)->to_room)
+      {
         mudlog_vfprintf(ch, LOG_SYSLOG, "SYSERR: Old house control file's house vnum %ld's atrium exit does not exist.", house_vnum);
         send_to_char(ch, "Operation failed: Old house control file (%s) is malformed.", HCONTROL_FILE);
         fclose(fl);
@@ -321,7 +361,8 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
 
       Apartment *apartment = NULL;
       ApartmentRoom *subroom = NULL;
-      if (nuke_and_pave) {
+      if (nuke_and_pave)
+      {
         // Create an apartment to represent this.
         apartment = new Apartment(complex, name, key_vnum, atrium, lifestyle, owner, paid_until);
         mudlog_vfprintf(ch, LOG_SYSLOG, "Loading apartment %s (loc %ld, key %ld, atrium %ld, lifestyle %d, owner %ld, paid %ld).",
@@ -347,11 +388,16 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
 
         // Add our new apartment to our complex.
         complex->add_apartment(apartment);
-      } else {
+      }
+      else
+      {
         // Find the existing apartment in this complex that matches the selected one.
-        for (auto &apt : complex->get_apartments()) {
-          for (auto &room : apt->get_rooms()) {
-            if (room->get_world_room() == &world[house_rnum]) {
+        for (auto &apt : complex->get_apartments())
+        {
+          for (auto &room : apt->get_rooms())
+          {
+            if (room->get_world_room() == &world[house_rnum])
+            {
               apartment = apt;
               subroom = room;
               break;
@@ -359,14 +405,16 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
           }
         }
 
-        if (!subroom) {
-          send_to_char(ch, "Ah, crapbaskets. No existing apartment room was found to match %s's %ld (landlord %ld). You're gonna have to do some manual repair work.\r\n", 
-                      name, GET_ROOM_VNUM(&world[house_rnum]), landlord_vnum);
+        if (!subroom)
+        {
+          send_to_char(ch, "Ah, crapbaskets. No existing apartment room was found to match %s's %ld (landlord %ld). You're gonna have to do some manual repair work.\r\n",
+                       name, GET_ROOM_VNUM(&world[house_rnum]), landlord_vnum);
           return;
         }
       }
 
-      if (target_room && target_room != &world[house_rnum]) {
+      if (target_room && target_room != &world[house_rnum])
+      {
         continue;
       }
 
@@ -376,11 +424,15 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
 
   fclose(fl);
 
-  if (nuke_and_pave) {
+  if (nuke_and_pave)
+  {
     // Add our complex list to our global one. If there are overlaps, complain loudly.
-    for (auto *our_complex : read_apartment_complexes) {
-      for (auto *existing_complex : global_apartment_complexes) {
-        if (!str_cmp(our_complex->get_name(), existing_complex->get_name())) {
+    for (auto *our_complex : read_apartment_complexes)
+    {
+      for (auto *existing_complex : global_apartment_complexes)
+      {
+        if (!str_cmp(our_complex->get_name(), existing_complex->get_name()))
+        {
           mudlog_vfprintf(ch, LOG_SYSLOG, "YOU DONE GOOFED: New complex is OVERWRITING existing complex %s!", existing_complex->get_name());
         }
       }
@@ -394,13 +446,19 @@ void houseedit_import_from_old_files(struct char_data *ch, bool nuke_and_pave, s
 #undef HED_IMPORT
 #undef HED_NUKEPANDPAVE
 
-void houseedit_trueup_lifestyles_to_rent(struct char_data *ch) {
+void houseedit_trueup_lifestyles_to_rent(struct char_data *ch)
+{
   mudlog_vfprintf(ch, LOG_SYSLOG, "Housing lifestyle true-up initiated by %s.", GET_CHAR_NAME(ch));
-  for (auto *complex : global_apartment_complexes) {
-    for (auto *apartment : complex->get_apartments()) {
-      for (int lifestyle = NUM_LIFESTYLES - 1; lifestyle >= 0; lifestyle--) {
-        if (apartment->get_rent_cost() >= lifestyles[lifestyle].monthly_cost_min) {
-          if (apartment->get_lifestyle() != lifestyle) {
+  for (auto *complex : global_apartment_complexes)
+  {
+    for (auto *apartment : complex->get_apartments())
+    {
+      for (int lifestyle = NUM_LIFESTYLES - 1; lifestyle >= 0; lifestyle--)
+      {
+        if (apartment->get_rent_cost() >= lifestyles[lifestyle].monthly_cost_min)
+        {
+          if (apartment->get_lifestyle() != lifestyle)
+          {
             mudlog_vfprintf(ch, LOG_SYSLOG, "Updating lifestyle of %s from %s to %s (rent: %d).",
                             apartment->get_full_name(),
                             lifestyles[apartment->get_lifestyle()].name,
@@ -418,23 +476,27 @@ void houseedit_trueup_lifestyles_to_rent(struct char_data *ch) {
 }
 
 // Loads an old file into a subroom. Returns 0 on success, anything else on failure.
-int copy_old_file_into_subroom_if_it_exists(bf::path old_file, ApartmentRoom *subroom, bool is_house_file) {
-  if (old_file.empty()) {
+int copy_old_file_into_subroom_if_it_exists(bf::path old_file, ApartmentRoom *subroom, bool is_house_file)
+{
+  if (old_file.empty())
+  {
     mudlog("SYSERR: Received EMPTY old_file path to copy_old_file_into_subroom()!", NULL, LOG_SYSLOG, TRUE);
     return 1;
   }
 
-  if (!subroom) {
+  if (!subroom)
+  {
     mudlog("SYSERR: Received NULL subroom to copy_old_file_into_subroom()!", NULL, LOG_SYSLOG, TRUE);
     return 2;
   }
 
-  if (!bf::exists(old_file)) {
+  if (!bf::exists(old_file))
+  {
     // This not an error case, we allow non-existant files to be loaded here.
     return 0;
   }
 
-  mudlog_vfprintf(NULL, LOG_SYSLOG, "Transferring %s storage for subroom %ld of %s.", 
+  mudlog_vfprintf(NULL, LOG_SYSLOG, "Transferring %s storage for subroom %ld of %s.",
                   is_house_file ? "house-file" : "storage-file",
                   subroom->get_vnum(),
                   subroom->get_apartment()->get_full_name());
@@ -444,7 +506,8 @@ int copy_old_file_into_subroom_if_it_exists(bf::path old_file, ApartmentRoom *su
 #ifdef USE_OLD_BOOST
   bf::copy_file(old_file, new_save_file, bf::copy_option::overwrite_if_exists);
 #else
-  bf::copy_file(old_file, new_save_file, bf::copy_options::overwrite_existing);
+  // bf::copy_file(old_file, new_save_file, bf::copy_option::overwrite_existing);
+  bf::copy_file(old_file, new_save_file, bf::copy_option::overwrite_if_exists);
 #endif
 
   // Immediately load from the newly-transferred file so that we don't lose room contents in a room save.
@@ -455,14 +518,16 @@ int copy_old_file_into_subroom_if_it_exists(bf::path old_file, ApartmentRoom *su
 }
 
 // Given a room, apartment, and subroom, imports the room.
-void _load_apartment_from_old_house_file(Apartment *apartment, ApartmentRoom *subroom, struct room_data *room, idnum_t owner, time_t paid_until, bool force_load) {
+void _load_apartment_from_old_house_file(Apartment *apartment, ApartmentRoom *subroom, struct room_data *room, idnum_t owner, time_t paid_until, bool force_load)
+{
   char storage_file_name[256];
 
   bf::path old_house_directory("house");
   bf::path old_storage_directory("storage");
 
   // Clone the current desc as a decoration, provided no decoration already exists.
-  if (!subroom->get_decoration() && *(GET_ROOM_DESC(room))) {
+  if (!subroom->get_decoration() && *(GET_ROOM_DESC(room)))
+  {
     subroom->set_decoration(GET_ROOM_DESC(room));
     subroom->save_decoration();
   }
@@ -470,9 +535,11 @@ void _load_apartment_from_old_house_file(Apartment *apartment, ApartmentRoom *su
   bool should_load = (owner && paid_until > time(0));
 
   // Set our owner and lease time.
-  if (should_load || force_load) {
-    if (!should_load) {
-      mudlog_vfprintf(NULL, LOG_SYSLOG, "FORCE-LOADING %ld.house: Lease not valid (%ld / %ld), but overridden.", 
+  if (should_load || force_load)
+  {
+    if (!should_load)
+    {
+      mudlog_vfprintf(NULL, LOG_SYSLOG, "FORCE-LOADING %ld.house: Lease not valid (%ld / %ld), but overridden.",
                       GET_ROOM_VNUM(room),
                       owner,
                       paid_until);
@@ -489,18 +556,22 @@ void _load_apartment_from_old_house_file(Apartment *apartment, ApartmentRoom *su
     apartment->load_guests_from_old_house_file(original_save_file.c_str());
     // Load our contents from the old file.
     copy_old_file_into_subroom_if_it_exists(original_save_file, subroom, TRUE);
-  } else {
-    mudlog_vfprintf(NULL, LOG_SYSLOG, "NOT loading guests / contents / etc from old house file %ld.house: Lease is not valid (%ld / %ld).", 
+  }
+  else
+  {
+    mudlog_vfprintf(NULL, LOG_SYSLOG, "NOT loading guests / contents / etc from old house file %ld.house: Lease is not valid (%ld / %ld).",
                     GET_ROOM_VNUM(room),
                     owner,
                     paid_until);
   }
 
   // Look for any associated storage rooms. If they exist, merge them into the new house structure.
-  for (auto subroom_itr : apartment->get_rooms()) {
+  for (auto subroom_itr : apartment->get_rooms())
+  {
     struct room_data *world_room = subroom_itr->get_world_room();
 
-    if (world_room && world_room != room) {
+    if (world_room && world_room != room)
+    {
       // Check for storage files even if the room isn't storage-flagged (addresses a bug on prod)
       bf::path original_save_file = old_storage_directory / vnum_to_string(GET_ROOM_VNUM(world_room));
       copy_old_file_into_subroom_if_it_exists(original_save_file, subroom_itr, FALSE);
@@ -509,14 +580,18 @@ void _load_apartment_from_old_house_file(Apartment *apartment, ApartmentRoom *su
       mudlog_vfprintf(NULL, LOG_SYSLOG, "Refusing to remove ROOM_STORAGE flag from apartment subroom %ld: We're on the buildport.", GET_ROOM_VNUM(world_room));
 #else
       // Make sure it's not flagged storage.
-      if (ROOM_FLAGGED(world_room, ROOM_STORAGE)) {
+      if (ROOM_FLAGGED(world_room, ROOM_STORAGE))
+      {
         ROOM_FLAGS(world_room).RemoveBit(ROOM_STORAGE);
 
         // Save the removal of the storage flag.
         int zone_idx = get_zone_index_number_from_vnum(GET_ROOM_VNUM(world_room));
-        if (zone_idx < 0) {
+        if (zone_idx < 0)
+        {
           mudlog_vfprintf(NULL, LOG_SYSLOG, "SYSERR: Unable to derive valid zone index from EXISTING room %ld. Stripping storage flag failed to save, WILL CAUSE ITEM DUPLICATION ON LOAD.", GET_ROOM_VNUM(world_room));
-        } else {
+        }
+        else
+        {
           write_world_to_disk(zone_table[zone_idx].number);
         }
       }

@@ -1,0 +1,23 @@
+version: '3.5'
+
+services:
+  mud:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: awakemud_cp
+    env_file:
+      - ./EXAMPLE.env
+    ports:
+      - 4000:4000
+    volumes:
+      - ./shared:/mnt/shared
+    environment:
+      - Key=Value
+      # - DJANGO_SETTINGS_MODULE=app.settings.local
+      # - DATABASE_URL=postgres://app:app@db:5432/app
+      - MYSQL_ROOT_PASSWORD=awakemud
+      - DBHOST=localhost
+      - DBNAME=AwakeMUD
+      - DBUSER=AwakeMUD
+      - DBPASS=awakemudpw1234!
